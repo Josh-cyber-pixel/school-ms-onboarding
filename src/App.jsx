@@ -17,7 +17,6 @@ async function apiFetch(path, { method = 'GET', body } = {}) {
   return json.data;
 }
 
-// ── Shared styles ─────────────────────────────────────────────────────────────
 const S = {
   page:    { minHeight: '100dvh', background: '#f0f4fa', fontFamily: 'system-ui, sans-serif', padding: '0' },
   card:    { background: '#fff', borderRadius: 16, padding: '24px 20px', margin: '0 0 16px', boxShadow: '0 2px 12px rgba(27,43,75,0.08)' },
@@ -35,7 +34,6 @@ const S = {
 const gold = '#C8932B';
 const navy = '#1B2B4B';
 
-// ── Screen: Loading ───────────────────────────────────────────────────────────
 function LoadingScreen() {
   return (
     <div style={{ ...S.page, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16 }}>
@@ -46,7 +44,6 @@ function LoadingScreen() {
   );
 }
 
-// ── Screen: Inactive ──────────────────────────────────────────────────────────
 function InactiveScreen() {
   return (
     <div style={{ ...S.page, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
@@ -66,7 +63,6 @@ function InactiveScreen() {
   );
 }
 
-// ── Screen: Login ─────────────────────────────────────────────────────────────
 function LoginScreen({ teachers, onLogin }) {
   const [teacherId, setTeacherId] = useState('');
   const [pin, setPin]             = useState('');
@@ -101,9 +97,7 @@ function LoginScreen({ teachers, onLogin }) {
         <form onSubmit={handleSubmit}>
           <div style={S.card}>
             <h2 style={{ fontSize: 17, fontWeight: 700, color: navy, marginBottom: 20, marginTop: 0 }}>Who are you?</h2>
-
             {error && <div style={S.error}>{error}</div>}
-
             <div style={{ marginBottom: 16 }}>
               <label style={S.label}>Select your name</label>
               <select style={{ ...S.input, appearance: 'none' }} value={teacherId} onChange={e => setTeacherId(e.target.value)} required>
@@ -113,23 +107,15 @@ function LoginScreen({ teachers, onLogin }) {
                 ))}
               </select>
             </div>
-
             <div style={{ marginBottom: 20 }}>
               <label style={S.label}>Your 4-digit PIN</label>
               <input
                 style={{ ...S.input, fontSize: 24, letterSpacing: '0.3em', textAlign: 'center' }}
-                type="tel"
-                inputMode="numeric"
-                maxLength={4}
-                pattern="\d{4}"
-                placeholder="••••"
-                value={pin}
-                onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                required
+                type="tel" inputMode="numeric" maxLength={4} pattern="\d{4}" placeholder="••••"
+                value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))} required
               />
               <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 6 }}>Set by your admin. Contact them if you don't have one.</p>
             </div>
-
             <button type="submit" style={S.btnPrimary} disabled={loading}>
               {loading ? 'Signing in…' : 'Sign In →'}
             </button>
@@ -140,7 +126,6 @@ function LoginScreen({ teachers, onLogin }) {
   );
 }
 
-// ── Screen: Class Select ──────────────────────────────────────────────────────
 function ClassSelectScreen({ teacher, classes, currentTerm, onSelect, registeredCount, onLogout }) {
   const [classId, setClassId] = useState('');
   const grouped = classes.reduce((acc, c) => {
@@ -179,14 +164,9 @@ function ClassSelectScreen({ teacher, classes, currentTerm, onSelect, registered
       <div style={{ padding: '0 16px' }}>
         <div style={S.card}>
           <h3 style={{ fontSize: 16, fontWeight: 700, color: navy, marginTop: 0, marginBottom: 16 }}>Select a class to register students</h3>
-
           <div style={{ marginBottom: 20 }}>
             <label style={S.label}>Class</label>
-            <select
-              style={{ ...S.input, appearance: 'none' }}
-              value={classId}
-              onChange={e => setClassId(e.target.value)}
-            >
+            <select style={{ ...S.input, appearance: 'none' }} value={classId} onChange={e => setClassId(e.target.value)}>
               <option value="">Choose a class…</option>
               {Object.entries(grouped).map(([level, cls]) => (
                 <optgroup key={level} label={level}>
@@ -197,12 +177,7 @@ function ClassSelectScreen({ teacher, classes, currentTerm, onSelect, registered
               ))}
             </select>
           </div>
-
-          <button
-            style={{ ...S.btnGold, opacity: classId ? 1 : 0.5 }}
-            disabled={!classId}
-            onClick={() => classId && onSelect(classId)}
-          >
+          <button style={{ ...S.btnGold, opacity: classId ? 1 : 0.5 }} disabled={!classId} onClick={() => classId && onSelect(classId)}>
             Start Registering →
           </button>
         </div>
@@ -211,10 +186,21 @@ function ClassSelectScreen({ teacher, classes, currentTerm, onSelect, registered
   );
 }
 
-// ── Screen: Register ──────────────────────────────────────────────────────────
-const EMPTY_STUDENT  = { photo: '', firstName: '', lastName: '', email: '', phone: '', dateOfBirth: '', gender: 'MALE', address: '', residentialStatus: 'DAY', nationality: '' };
+const EMPTY_STUDENT  = { photo: '', firstName: '', lastName: '', email: '', phone: '', dobDay: '', dobMonth: '', dobYear: '', gender: 'MALE', address: '', residentialStatus: 'DAY', nationality: '' };
 const EMPTY_GUARDIAN = { firstName: '', lastName: '', email: '', phone: '', relationship: 'Mother' };
 const STEPS = ['Photo', 'Student Info', 'Guardian', 'Review'];
+
+const AFRICAN_NATIONALITIES = {
+  'West Africa': ['Ghanaian','Nigerian','Ivorian','Senegalese','Malian','Burkinabe','Guinean','Sierra Leonean','Liberian','Togolese','Beninese','Nigerien','Gambian','Cape Verdean','Mauritanian'],
+  'East Africa': ['Kenyan','Ugandan','Tanzanian','Rwandan','Ethiopian','Somali','Sudanese','Eritrean','Djiboutian','Burundian'],
+  'Central Africa': ['Cameroonian','Congolese','Gabonese','Chadian','Central African','Equatorial Guinean'],
+  'North Africa': ['Egyptian','Moroccan','Algerian','Tunisian','Libyan'],
+};
+
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const CURRENT_YEAR = new Date().getFullYear();
+const YEARS = Array.from({ length: CURRENT_YEAR - 1960 + 1 }, (_, i) => CURRENT_YEAR - i);
+const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
 
 function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack }) {
   const [step, setStep]             = useState(0);
@@ -226,6 +212,11 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
 
   function setS(field, value) { setStudent(f => ({ ...f, [field]: value })); }
   function setG(field, value) { setGuardian(f => ({ ...f, [field]: value })); }
+
+  function getDateOfBirth() {
+    if (!student.dobYear || !student.dobMonth || !student.dobDay) return '';
+    return `${student.dobYear}-${String(student.dobMonth).padStart(2,'0')}-${String(student.dobDay).padStart(2,'0')}`;
+  }
 
   function handlePhotoCapture(e) {
     const file = e.target.files[0];
@@ -271,6 +262,7 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
         method: 'POST',
         body: {
           ...student,
+          dateOfBirth: getDateOfBirth(),
           guardian,
           classId: selectedClass.id,
           termId:  currentTerm?.id,
@@ -281,7 +273,6 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
     finally { setSubmitting(false); }
   }
 
-  // Step indicator
   const StepBar = () => (
     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 16px', background: '#fff', borderBottom: '1px solid #e2e8f0' }}>
       {STEPS.map((s, i) => (
@@ -307,7 +298,6 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
 
   return (
     <div style={{ ...S.page, display: 'flex', flexDirection: 'column' }}>
-      {/* Header */}
       <div style={{ background: navy, padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 11, margin: 0 }}>{teacher?.name} · {selectedClass?.level?.name}</p>
@@ -323,13 +313,11 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
       <div style={{ flex: 1, padding: '16px', overflowY: 'auto' }}>
         {error && <div style={S.error}>{error}</div>}
 
-        {/* ── Step 0: Photo ── */}
+        {/* Step 0: Photo */}
         {step === 0 && (
           <div style={S.card}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: navy, margin: '0 0 6px' }}>Take Student's Photo</h3>
             <p style={{ color: '#64748b', fontSize: 13, margin: '0 0 20px' }}>This is required. Use the rear camera for best quality.</p>
-
-            {/* Photo preview / capture area */}
             <div
               onClick={() => photoInputRef.current?.click()}
               style={{
@@ -353,41 +341,21 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
                 </>
               )}
             </div>
-
-            <input
-              ref={photoInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={handlePhotoCapture}
-              style={{ display: 'none' }}
-            />
-
+            <input ref={photoInputRef} type="file" accept="image/*" capture="environment" onChange={handlePhotoCapture} style={{ display: 'none' }} />
             {student.photo && (
-              <button
-                type="button"
-                onClick={() => photoInputRef.current?.click()}
-                style={{ ...S.btnSecondary, marginBottom: 12 }}
-              >
+              <button type="button" onClick={() => photoInputRef.current?.click()} style={{ ...S.btnSecondary, marginBottom: 12 }}>
                 Retake Photo
               </button>
             )}
-
-            <button
-              type="button"
-              style={{ ...S.btnPrimary, opacity: student.photo ? 1 : 0.4 }}
-              disabled={!student.photo}
-              onClick={nextStep}
-            >
+            <button type="button" style={{ ...S.btnPrimary, opacity: student.photo ? 1 : 0.4 }} disabled={!student.photo} onClick={nextStep}>
               {student.photo ? 'Looks Good →' : 'Photo Required'}
             </button>
           </div>
         )}
 
-        {/* ── Step 1: Student Info ── */}
+        {/* Step 1: Student Info */}
         {step === 1 && (
           <div style={S.card}>
-            {/* Mini photo */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, padding: 12, background: '#f8fafc', borderRadius: 12 }}>
               <img src={student.photo} alt="" style={{ width: 52, height: 52, borderRadius: '50%', objectFit: 'cover', border: `2px solid ${gold}` }} />
               <div>
@@ -401,19 +369,48 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
               { label: 'Last Name *',  field: 'lastName',  type: 'text', placeholder: 'e.g. Mensah' },
               { label: 'Email *',      field: 'email',     type: 'email', placeholder: 'student@example.com' },
               { label: 'Phone',        field: 'phone',     type: 'tel',  placeholder: '+233 XX XXX XXXX' },
-              { label: 'Date of Birth', field: 'dateOfBirth', type: 'date', placeholder: '' },
-              { label: 'Nationality',  field: 'nationality', type: 'text', placeholder: 'e.g. Ghanaian' },
               { label: 'Address',      field: 'address',   type: 'text', placeholder: 'Residential address' },
             ].map(({ label, field, type, placeholder }) => (
               <div key={field} style={{ marginBottom: 14 }}>
                 <label style={S.label}>{label}</label>
-                <input
-                  style={S.input} type={type} placeholder={placeholder}
-                  value={student[field]} onChange={e => setS(field, e.target.value)}
-                />
+                <input style={S.input} type={type} placeholder={placeholder} value={student[field]} onChange={e => setS(field, e.target.value)} />
               </div>
             ))}
 
+            {/* Date of Birth — three dropdowns */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={S.label}>Date of Birth</label>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <select style={{ ...S.input, appearance: 'none', flex: 1 }} value={student.dobDay} onChange={e => setS('dobDay', e.target.value)}>
+                  <option value="">Day</option>
+                  {DAYS.map(d => <option key={d} value={String(d).padStart(2,'0')}>{d}</option>)}
+                </select>
+                <select style={{ ...S.input, appearance: 'none', flex: 1 }} value={student.dobMonth} onChange={e => setS('dobMonth', e.target.value)}>
+                  <option value="">Month</option>
+                  {MONTHS.map((m, i) => <option key={m} value={String(i+1).padStart(2,'0')}>{m}</option>)}
+                </select>
+                <select style={{ ...S.input, appearance: 'none', flex: 1 }} value={student.dobYear} onChange={e => setS('dobYear', e.target.value)}>
+                  <option value="">Year</option>
+                  {YEARS.map(y => <option key={y} value={y}>{y}</option>)}
+                </select>
+              </div>
+            </div>
+
+            {/* Nationality */}
+            <div style={{ marginBottom: 14 }}>
+              <label style={S.label}>Nationality</label>
+              <select style={{ ...S.input, appearance: 'none' }} value={student.nationality} onChange={e => setS('nationality', e.target.value)}>
+                <option value="">Select nationality…</option>
+                {Object.entries(AFRICAN_NATIONALITIES).map(([region, list]) => (
+                  <optgroup key={region} label={region}>
+                    {list.map(n => <option key={n} value={n}>{n}</option>)}
+                  </optgroup>
+                ))}
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            {/* Gender */}
             <div style={{ marginBottom: 14 }}>
               <label style={S.label}>Gender</label>
               <select style={{ ...S.input, appearance: 'none' }} value={student.gender} onChange={e => setS('gender', e.target.value)}>
@@ -423,6 +420,7 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
               </select>
             </div>
 
+            {/* Residential Status */}
             <div style={{ marginBottom: 20 }}>
               <label style={S.label}>Residential Status</label>
               <select style={{ ...S.input, appearance: 'none' }} value={student.residentialStatus} onChange={e => setS('residentialStatus', e.target.value)}>
@@ -438,14 +436,13 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
           </div>
         )}
 
-        {/* ── Step 2: Guardian ── */}
+        {/* Step 2: Guardian */}
         {step === 2 && (
           <div style={S.card}>
             <h3 style={{ fontSize: 16, fontWeight: 700, color: navy, margin: '0 0 4px' }}>Guardian / Parent Details</h3>
             <p style={{ color: '#64748b', fontSize: 13, margin: '0 0 20px' }}>
               For <strong style={{ color: navy }}>{student.firstName} {student.lastName}</strong>
             </p>
-
             {[
               { label: 'First Name *', field: 'firstName', type: 'text', placeholder: 'Guardian first name' },
               { label: 'Last Name *',  field: 'lastName',  type: 'text', placeholder: 'Guardian last name' },
@@ -454,20 +451,15 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
             ].map(({ label, field, type, placeholder }) => (
               <div key={field} style={{ marginBottom: 14 }}>
                 <label style={S.label}>{label}</label>
-                <input
-                  style={S.input} type={type} placeholder={placeholder}
-                  value={guardian[field]} onChange={e => setG(field, e.target.value)}
-                />
+                <input style={S.input} type={type} placeholder={placeholder} value={guardian[field]} onChange={e => setG(field, e.target.value)} />
               </div>
             ))}
-
             <div style={{ marginBottom: 20 }}>
               <label style={S.label}>Relationship</label>
               <select style={{ ...S.input, appearance: 'none' }} value={guardian.relationship} onChange={e => setG('relationship', e.target.value)}>
                 {['Mother','Father','Guardian','Uncle','Aunt','Grandparent','Other'].map(r => <option key={r}>{r}</option>)}
               </select>
             </div>
-
             <div style={{ display: 'flex', gap: 10 }}>
               <button type="button" style={{ ...S.btnSecondary, flex: 1 }} onClick={() => setStep(1)}>← Back</button>
               <button type="button" style={{ ...S.btnPrimary, flex: 2 }} onClick={nextStep}>Review →</button>
@@ -475,13 +467,11 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
           </div>
         )}
 
-        {/* ── Step 3: Review ── */}
+        {/* Step 3: Review */}
         {step === 3 && (
           <div>
             <div style={S.card}>
               <h3 style={{ fontSize: 16, fontWeight: 700, color: navy, margin: '0 0 16px' }}>Review & Confirm</h3>
-
-              {/* Photo + name */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: 14, background: '#f8fafc', borderRadius: 12, marginBottom: 16 }}>
                 <img src={student.photo} alt="" style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: `2px solid ${gold}` }} />
                 <div>
@@ -489,8 +479,6 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
                   <p style={{ fontSize: 13, color: '#64748b', margin: '2px 0 0' }}>{student.email}</p>
                 </div>
               </div>
-
-              {/* Summary rows */}
               {[
                 { label: 'Class', value: `${selectedClass?.name}${selectedClass?.section ? ` (${selectedClass.section})` : ''}` },
                 { label: 'Level', value: selectedClass?.level?.name ?? '—' },
@@ -498,24 +486,20 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
                 { label: 'Gender', value: student.gender },
                 { label: 'Residential', value: student.residentialStatus === 'DAY' ? 'Day Student' : 'Boarder' },
                 { label: 'Nationality', value: student.nationality || '—' },
-                { label: 'DOB', value: student.dateOfBirth || '—' },
+                { label: 'DOB', value: getDateOfBirth() || '—' },
               ].map(({ label, value }) => (
                 <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #f1f5f9' }}>
                   <span style={{ fontSize: 13, color: '#64748b' }}>{label}</span>
                   <span style={{ fontSize: 13, fontWeight: 600, color: navy }}>{value}</span>
                 </div>
               ))}
-
-              {/* Guardian summary */}
               <div style={{ marginTop: 16, padding: 12, background: '#f0f4fa', borderRadius: 10, borderLeft: `3px solid ${gold}` }}>
                 <p style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 6px' }}>Guardian</p>
                 <p style={{ fontSize: 14, fontWeight: 700, color: navy, margin: 0 }}>{guardian.firstName} {guardian.lastName} ({guardian.relationship})</p>
                 <p style={{ fontSize: 13, color: '#64748b', margin: '2px 0 0' }}>{guardian.email}{guardian.phone ? ` · ${guardian.phone}` : ''}</p>
               </div>
-
               {error && <div style={{ ...S.error, marginTop: 16 }}>{error}</div>}
             </div>
-
             <div style={{ padding: '0 0 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
               <button type="button" style={{ ...S.btnGold }} onClick={handleSubmit} disabled={submitting}>
                 {submitting ? 'Registering…' : '✓ Confirm & Register Student'}
@@ -529,7 +513,6 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
   );
 }
 
-// ── Screen: Success ───────────────────────────────────────────────────────────
 function SuccessScreen({ lastStudent, count, selectedClass, onAddAnother, onSwitchClass, onLogout }) {
   return (
     <div style={{ ...S.page, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24, textAlign: 'center' }}>
@@ -538,19 +521,16 @@ function SuccessScreen({ lastStudent, count, selectedClass, onAddAnother, onSwit
           <polyline points="20 6 9 17 4 12" />
         </svg>
       </div>
-
       <h2 style={{ fontSize: 22, fontWeight: 800, color: navy, margin: '0 0 6px' }}>Student Registered!</h2>
       <p style={{ fontSize: 15, color: '#64748b', margin: '0 0 4px' }}>
         <strong style={{ color: navy }}>{lastStudent?.name}</strong> has been added.
       </p>
       <p style={{ fontSize: 13, color: '#94a3b8', margin: '0 0 8px' }}>Student code: <strong>{lastStudent?.studentCode}</strong></p>
-
       <div style={{ background: '#f0f4fa', borderRadius: 12, padding: '10px 20px', marginBottom: 28, display: 'inline-block' }}>
         <p style={{ fontSize: 13, color: '#64748b', margin: 0 }}>
           {count} student{count !== 1 ? 's' : ''} registered in <strong style={{ color: navy }}>{selectedClass?.name}</strong> this session
         </p>
       </div>
-
       <div style={{ width: '100%', maxWidth: 360, display: 'flex', flexDirection: 'column', gap: 10 }}>
         <button style={S.btnGold} onClick={onAddAnother}>+ Register Next Student</button>
         <button style={S.btnSecondary} onClick={onSwitchClass}>Switch Class</button>
@@ -560,7 +540,6 @@ function SuccessScreen({ lastStudent, count, selectedClass, onAddAnother, onSwit
   );
 }
 
-// ── Root: wires everything together ───────────────────────────────────────────
 export default function App() {
   const [screen, setScreen]               = useState('loading');
   const [teachers, setTeachers]           = useState([]);
@@ -575,7 +554,6 @@ export default function App() {
     apiFetch('/onboarding/status')
       .then(async data => {
         if (!data.active) { setScreen('inactive'); return; }
-        // Restore session
         const token = localStorage.getItem('ob_token');
         const saved = localStorage.getItem('ob_teacher');
         if (token && saved) {
@@ -629,8 +607,7 @@ export default function App() {
   if (screen === 'register') return (
     <RegisterScreen
       teacher={teacher} selectedClass={selectedClass} currentTerm={currentTerm}
-      onDone={handleStudentDone}
-      onBack={() => setScreen('class_select')}
+      onDone={handleStudentDone} onBack={() => setScreen('class_select')}
     />
   );
   if (screen === 'success') return (
