@@ -513,7 +513,7 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
                 <p style={{ fontSize: 13, color: '#64748b', margin: '2px 0 0' }}>{guardian.email}{guardian.phone ? ` · ${guardian.phone}` : ''}</p>
               </div>
 
-              {submitError && <div style={{ ...S.error, marginTop: 16 }}>{submitError}</div>}
+              {error && <div style={{ ...S.error, marginTop: 16 }}>{error}</div>}
             </div>
 
             <div style={{ padding: '0 0 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
