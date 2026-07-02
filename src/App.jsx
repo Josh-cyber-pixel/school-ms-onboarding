@@ -18,21 +18,24 @@ async function apiFetch(path, { method = 'GET', body } = {}) {
 }
 
 const S = {
-  page:    { minHeight: '100dvh', background: '#f0f4fa', fontFamily: 'system-ui, sans-serif', padding: '0' },
-  card:    { background: '#fff', borderRadius: 16, padding: '24px 20px', margin: '0 0 16px', boxShadow: '0 2px 12px rgba(27,43,75,0.08)' },
-  header:  { background: 'linear-gradient(135deg,#1B2B4B,#243660)', padding: '20px', borderRadius: '0 0 20px 20px', marginBottom: 20 },
-  label:   { display: 'block', fontSize: 12, fontWeight: 600, color: '#475569', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' },
-  input:   { width: '100%', padding: '12px 14px', borderRadius: 10, border: '1.5px solid #e2e8f0', fontSize: 15, outline: 'none', boxSizing: 'border-box', background: '#f8fafc' },
-  btnPrimary:   { width: '100%', padding: '14px', borderRadius: 12, background: 'linear-gradient(135deg,#1B2B4B,#243660)', color: '#fff', fontSize: 16, fontWeight: 700, border: 'none', cursor: 'pointer' },
-  btnGold:      { width: '100%', padding: '14px', borderRadius: 12, background: 'linear-gradient(135deg,#C8932B,#e0b254)', color: '#fff', fontSize: 16, fontWeight: 700, border: 'none', cursor: 'pointer' },
-  btnSecondary: { width: '100%', padding: '14px', borderRadius: 12, background: '#f0f4fa', color: '#1B2B4B', fontSize: 16, fontWeight: 600, border: '1.5px solid #e2e8f0', cursor: 'pointer' },
-  error:   { background: '#FBEAE9', color: '#c0392b', borderRadius: 10, padding: '12px 14px', fontSize: 14, marginBottom: 12, borderLeft: '3px solid #c0392b' },
-  success: { background: '#E7F6EC', color: '#1a7a3c', borderRadius: 10, padding: '12px 14px', fontSize: 14, marginBottom: 12, borderLeft: '3px solid #1a7a3c' },
-  info:    { background: '#EEF2FF', color: '#3730a3', borderRadius: 10, padding: '12px 14px', fontSize: 14, marginBottom: 12, borderLeft: '3px solid #6366f1' },
+  page:        { minHeight: '100dvh', background: '#f0f4fa', fontFamily: 'system-ui, sans-serif', padding: '0' },
+  card:        { background: '#fff', borderRadius: 16, padding: '24px 20px', margin: '0 0 16px', boxShadow: '0 2px 12px rgba(27,43,75,0.08)' },
+  header:      { background: 'linear-gradient(135deg,#1B2B4B,#243660)', padding: '20px', borderRadius: '0 0 20px 20px', marginBottom: 20 },
+  label:       { display: 'block', fontSize: 12, fontWeight: 600, color: '#475569', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' },
+  input:       { width: '100%', padding: '12px 14px', borderRadius: 10, border: '1.5px solid #e2e8f0', fontSize: 15, outline: 'none', boxSizing: 'border-box', background: '#f8fafc' },
+  btnPrimary:  { width: '100%', padding: '14px', borderRadius: 12, background: 'linear-gradient(135deg,#1B2B4B,#243660)', color: '#fff', fontSize: 16, fontWeight: 700, border: 'none', cursor: 'pointer' },
+  btnGold:     { width: '100%', padding: '14px', borderRadius: 12, background: 'linear-gradient(135deg,#C8932B,#e0b254)', color: '#fff', fontSize: 16, fontWeight: 700, border: 'none', cursor: 'pointer' },
+  btnSecondary:{ width: '100%', padding: '14px', borderRadius: 12, background: '#f0f4fa', color: '#1B2B4B', fontSize: 16, fontWeight: 600, border: '1.5px solid #e2e8f0', cursor: 'pointer' },
+  error:       { background: '#FBEAE9', color: '#c0392b', borderRadius: 10, padding: '12px 14px', fontSize: 14, marginBottom: 12, borderLeft: '3px solid #c0392b' },
+  success:     { background: '#E7F6EC', color: '#1a7a3c', borderRadius: 10, padding: '12px 14px', fontSize: 14, marginBottom: 12, borderLeft: '3px solid #1a7a3c' },
+  info:        { background: '#EEF2FF', color: '#3730a3', borderRadius: 10, padding: '12px 14px', fontSize: 14, marginBottom: 12, borderLeft: '3px solid #6366f1' },
 };
 
 const gold = '#C8932B';
 const navy = '#1B2B4B';
+
+// ── Replace this with your actual Vercel frontend URL ─────────────────────────
+const PRIVACY_URL = 'https://your-domain.vercel.app/privacy';
 
 function LoadingScreen() {
   return (
@@ -121,6 +124,15 @@ function LoginScreen({ teachers, onLogin }) {
             </button>
           </div>
         </form>
+
+        {/* Privacy policy footer */}
+        <p style={{ textAlign: 'center', fontSize: 11, color: '#94a3b8', padding: '4px 0 24px' }}>
+          By using EduTrack you agree to our{' '}
+          <a href={PRIVACY_URL} target="_blank" rel="noopener noreferrer"
+            style={{ color: '#6366f1', textDecoration: 'underline' }}>
+            Privacy Policy
+          </a>
+        </p>
       </div>
     </div>
   );
@@ -191,16 +203,16 @@ const EMPTY_GUARDIAN = { firstName: '', lastName: '', email: '', phone: '', rela
 const STEPS = ['Photo', 'Student Info', 'Guardian', 'Review'];
 
 const AFRICAN_NATIONALITIES = {
-  'West Africa': ['Ghanaian','Nigerian','Ivorian','Senegalese','Malian','Burkinabe','Guinean','Sierra Leonean','Liberian','Togolese','Beninese','Nigerien','Gambian','Cape Verdean','Mauritanian'],
-  'East Africa': ['Kenyan','Ugandan','Tanzanian','Rwandan','Ethiopian','Somali','Sudanese','Eritrean','Djiboutian','Burundian'],
-  'Central Africa': ['Cameroonian','Congolese','Gabonese','Chadian','Central African','Equatorial Guinean'],
-  'North Africa': ['Egyptian','Moroccan','Algerian','Tunisian','Libyan'],
+  'West Africa':   ['Ghanaian','Nigerian','Ivorian','Senegalese','Malian','Burkinabe','Guinean','Sierra Leonean','Liberian','Togolese','Beninese','Nigerien','Gambian','Cape Verdean','Mauritanian'],
+  'East Africa':   ['Kenyan','Ugandan','Tanzanian','Rwandan','Ethiopian','Somali','Sudanese','Eritrean','Djiboutian','Burundian'],
+  'Central Africa':['Cameroonian','Congolese','Gabonese','Chadian','Central African','Equatorial Guinean'],
+  'North Africa':  ['Egyptian','Moroccan','Algerian','Tunisian','Libyan'],
 };
 
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: CURRENT_YEAR - 1960 + 1 }, (_, i) => CURRENT_YEAR - i);
-const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
+const DAYS  = Array.from({ length: 31 }, (_, i) => i + 1);
 
 function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack }) {
   const [step, setStep]             = useState(0);
@@ -365,11 +377,11 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
             </div>
 
             {[
-              { label: 'First Name *', field: 'firstName', type: 'text', placeholder: 'e.g. Kwame' },
-              { label: 'Last Name *',  field: 'lastName',  type: 'text', placeholder: 'e.g. Mensah' },
+              { label: 'First Name *', field: 'firstName', type: 'text',  placeholder: 'e.g. Kwame' },
+              { label: 'Last Name *',  field: 'lastName',  type: 'text',  placeholder: 'e.g. Mensah' },
               { label: 'Email *',      field: 'email',     type: 'email', placeholder: 'student@example.com' },
-              { label: 'Phone',        field: 'phone',     type: 'tel',  placeholder: '+233 XX XXX XXXX' },
-              { label: 'Address',      field: 'address',   type: 'text', placeholder: 'Residential address' },
+              { label: 'Phone',        field: 'phone',     type: 'tel',   placeholder: '+233 XX XXX XXXX' },
+              { label: 'Address',      field: 'address',   type: 'text',  placeholder: 'Residential address' },
             ].map(({ label, field, type, placeholder }) => (
               <div key={field} style={{ marginBottom: 14 }}>
                 <label style={S.label}>{label}</label>
@@ -377,7 +389,6 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
               </div>
             ))}
 
-            {/* Date of Birth — three dropdowns */}
             <div style={{ marginBottom: 14 }}>
               <label style={S.label}>Date of Birth</label>
               <div style={{ display: 'flex', gap: 8 }}>
@@ -396,7 +407,6 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
               </div>
             </div>
 
-            {/* Nationality */}
             <div style={{ marginBottom: 14 }}>
               <label style={S.label}>Nationality</label>
               <select style={{ ...S.input, appearance: 'none' }} value={student.nationality} onChange={e => setS('nationality', e.target.value)}>
@@ -410,7 +420,6 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
               </select>
             </div>
 
-            {/* Gender */}
             <div style={{ marginBottom: 14 }}>
               <label style={S.label}>Gender</label>
               <select style={{ ...S.input, appearance: 'none' }} value={student.gender} onChange={e => setS('gender', e.target.value)}>
@@ -420,7 +429,6 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
               </select>
             </div>
 
-            {/* Residential Status */}
             <div style={{ marginBottom: 20 }}>
               <label style={S.label}>Residential Status</label>
               <select style={{ ...S.input, appearance: 'none' }} value={student.residentialStatus} onChange={e => setS('residentialStatus', e.target.value)}>
@@ -444,10 +452,10 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
               For <strong style={{ color: navy }}>{student.firstName} {student.lastName}</strong>
             </p>
             {[
-              { label: 'First Name *', field: 'firstName', type: 'text', placeholder: 'Guardian first name' },
-              { label: 'Last Name *',  field: 'lastName',  type: 'text', placeholder: 'Guardian last name' },
+              { label: 'First Name *', field: 'firstName', type: 'text',  placeholder: 'Guardian first name' },
+              { label: 'Last Name *',  field: 'lastName',  type: 'text',  placeholder: 'Guardian last name' },
               { label: 'Email *',      field: 'email',     type: 'email', placeholder: 'guardian@example.com' },
-              { label: 'Phone',        field: 'phone',     type: 'tel',  placeholder: '+233 XX XXX XXXX' },
+              { label: 'Phone',        field: 'phone',     type: 'tel',   placeholder: '+233 XX XXX XXXX' },
             ].map(({ label, field, type, placeholder }) => (
               <div key={field} style={{ marginBottom: 14 }}>
                 <label style={S.label}>{label}</label>
@@ -480,13 +488,13 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
                 </div>
               </div>
               {[
-                { label: 'Class', value: `${selectedClass?.name}${selectedClass?.section ? ` (${selectedClass.section})` : ''}` },
-                { label: 'Level', value: selectedClass?.level?.name ?? '—' },
-                { label: 'Term',  value: `${currentTerm?.academicYear?.name} · ${currentTerm?.name}` },
-                { label: 'Gender', value: student.gender },
+                { label: 'Class',       value: `${selectedClass?.name}${selectedClass?.section ? ` (${selectedClass.section})` : ''}` },
+                { label: 'Level',       value: selectedClass?.level?.name ?? '—' },
+                { label: 'Term',        value: `${currentTerm?.academicYear?.name} · ${currentTerm?.name}` },
+                { label: 'Gender',      value: student.gender },
                 { label: 'Residential', value: student.residentialStatus === 'DAY' ? 'Day Student' : 'Boarder' },
                 { label: 'Nationality', value: student.nationality || '—' },
-                { label: 'DOB', value: getDateOfBirth() || '—' },
+                { label: 'DOB',         value: getDateOfBirth() || '—' },
               ].map(({ label, value }) => (
                 <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #f1f5f9' }}>
                   <span style={{ fontSize: 13, color: '#64748b' }}>{label}</span>
@@ -541,14 +549,14 @@ function SuccessScreen({ lastStudent, count, selectedClass, onAddAnother, onSwit
 }
 
 export default function App() {
-  const [screen, setScreen]               = useState('loading');
-  const [teachers, setTeachers]           = useState([]);
-  const [teacher, setTeacher]             = useState(null);
-  const [classes, setClasses]             = useState([]);
-  const [currentTerm, setCurrentTerm]     = useState(null);
+  const [screen, setScreen]                   = useState('loading');
+  const [teachers, setTeachers]               = useState([]);
+  const [teacher, setTeacher]                 = useState(null);
+  const [classes, setClasses]                 = useState([]);
+  const [currentTerm, setCurrentTerm]         = useState(null);
   const [selectedClassId, setSelectedClassId] = useState('');
   const [registeredCount, setRegisteredCount] = useState(0);
-  const [lastStudent, setLastStudent]     = useState(null);
+  const [lastStudent, setLastStudent]         = useState(null);
 
   useEffect(() => {
     apiFetch('/onboarding/status')
