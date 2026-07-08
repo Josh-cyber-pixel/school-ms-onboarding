@@ -34,7 +34,6 @@ const S = {
 const gold = '#C8932B';
 const navy = '#1B2B4B';
 
-// ── Replace this with your actual Vercel frontend URL ─────────────────────────
 const PRIVACY_URL = 'https://your-domain.vercel.app/privacy';
 
 function LoadingScreen() {
@@ -125,7 +124,6 @@ function LoginScreen({ teachers, onLogin }) {
           </div>
         </form>
 
-        {/* Privacy policy footer */}
         <p style={{ textAlign: 'center', fontSize: 11, color: '#94a3b8', padding: '4px 0 24px' }}>
           By using EduTrack you agree to our{' '}
           <a href={PRIVACY_URL} target="_blank" rel="noopener noreferrer"
@@ -249,15 +247,14 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
     img.src = url;
   }
 
+  // ── FIXED: email is now optional for both student and guardian ──
   function validateStep() {
     if (step === 0 && !student.photo) { setError('Photo is required. Please take a photo.'); return false; }
     if (step === 1) {
       if (!student.firstName || !student.lastName) { setError('First and last name are required.'); return false; }
-      if (!student.email) { setError('Email is required.'); return false; }
     }
     if (step === 2) {
       if (!guardian.firstName || !guardian.lastName) { setError('Guardian first and last name are required.'); return false; }
-      if (!guardian.email) { setError('Guardian email is required.'); return false; }
     }
     setError(''); return true;
   }
@@ -377,11 +374,11 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
             </div>
 
             {[
-              { label: 'First Name *', field: 'firstName', type: 'text',  placeholder: 'e.g. Kwame' },
-              { label: 'Last Name *',  field: 'lastName',  type: 'text',  placeholder: 'e.g. Mensah' },
-              { label: 'Email *',      field: 'email',     type: 'email', placeholder: 'student@example.com' },
-              { label: 'Phone',        field: 'phone',     type: 'tel',   placeholder: '+233 XX XXX XXXX' },
-              { label: 'Address',      field: 'address',   type: 'text',  placeholder: 'Residential address' },
+              { label: 'First Name *',       field: 'firstName', type: 'text',  placeholder: 'e.g. Kwame' },
+              { label: 'Last Name *',        field: 'lastName',  type: 'text',  placeholder: 'e.g. Mensah' },
+              { label: 'Email (optional)',   field: 'email',     type: 'email', placeholder: 'student@example.com' },
+              { label: 'Phone',              field: 'phone',     type: 'tel',   placeholder: '+233 XX XXX XXXX' },
+              { label: 'Address',            field: 'address',   type: 'text',  placeholder: 'Residential address' },
             ].map(({ label, field, type, placeholder }) => (
               <div key={field} style={{ marginBottom: 14 }}>
                 <label style={S.label}>{label}</label>
@@ -452,10 +449,10 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
               For <strong style={{ color: navy }}>{student.firstName} {student.lastName}</strong>
             </p>
             {[
-              { label: 'First Name *', field: 'firstName', type: 'text',  placeholder: 'Guardian first name' },
-              { label: 'Last Name *',  field: 'lastName',  type: 'text',  placeholder: 'Guardian last name' },
-              { label: 'Email *',      field: 'email',     type: 'email', placeholder: 'guardian@example.com' },
-              { label: 'Phone',        field: 'phone',     type: 'tel',   placeholder: '+233 XX XXX XXXX' },
+              { label: 'First Name *',       field: 'firstName', type: 'text',  placeholder: 'Guardian first name' },
+              { label: 'Last Name *',        field: 'lastName',  type: 'text',  placeholder: 'Guardian last name' },
+              { label: 'Email (optional)',   field: 'email',     type: 'email', placeholder: 'guardian@example.com' },
+              { label: 'Phone',              field: 'phone',     type: 'tel',   placeholder: '+233 XX XXX XXXX' },
             ].map(({ label, field, type, placeholder }) => (
               <div key={field} style={{ marginBottom: 14 }}>
                 <label style={S.label}>{label}</label>
@@ -484,7 +481,7 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
                 <img src={student.photo} alt="" style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', border: `2px solid ${gold}` }} />
                 <div>
                   <p style={{ fontSize: 18, fontWeight: 800, color: navy, margin: 0 }}>{student.firstName} {student.lastName}</p>
-                  <p style={{ fontSize: 13, color: '#64748b', margin: '2px 0 0' }}>{student.email}</p>
+                  <p style={{ fontSize: 13, color: '#64748b', margin: '2px 0 0' }}>{student.email || 'No email provided'}</p>
                 </div>
               </div>
               {[
@@ -504,7 +501,7 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
               <div style={{ marginTop: 16, padding: 12, background: '#f0f4fa', borderRadius: 10, borderLeft: `3px solid ${gold}` }}>
                 <p style={{ fontSize: 11, fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 6px' }}>Guardian</p>
                 <p style={{ fontSize: 14, fontWeight: 700, color: navy, margin: 0 }}>{guardian.firstName} {guardian.lastName} ({guardian.relationship})</p>
-                <p style={{ fontSize: 13, color: '#64748b', margin: '2px 0 0' }}>{guardian.email}{guardian.phone ? ` · ${guardian.phone}` : ''}</p>
+                <p style={{ fontSize: 13, color: '#64748b', margin: '2px 0 0' }}>{guardian.email || 'No email provided'}{guardian.phone ? ` · ${guardian.phone}` : ''}</p>
               </div>
               {error && <div style={{ ...S.error, marginTop: 16 }}>{error}</div>}
             </div>
