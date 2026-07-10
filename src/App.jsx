@@ -65,11 +65,30 @@ function InactiveScreen() {
   );
 }
 
-function LoginScreen({ teachers, onLogin }) {
-  const [teacherId, setTeacherId] = useState('');
-  const [pin, setPin]             = useState('');
-  const [error, setError]         = useState('');
-  const [loading, setLoading]     = useState(false);
+function LoginScreen({ onLogin }) {
+  const [schoolCode, setSchoolCode]         = useState('');
+  const [teachers, setTeachers]             = useState([]);
+  const [teachersFetched, setTeachersFetched] = useState(false);
+  const [teacherId, setTeacherId]           = useState('');
+  const [pin, setPin]                       = useState('');
+  const [error, setError]                   = useState('');
+  const [loading, setLoading]               = useState(false);
+  const [fetching, setFetching]             = useState(false);
+
+  async function handleFetchTeachers(e) {
+    e.preventDefault();
+    if (!schoolCode.trim()) return setError('Please enter your school code.');
+    setFetching(true); setError('');
+    try {
+      const data = await apiFetch(`/onboarding/teachers?schoolCode=${schoolCode.trim().toUpperCase()}`);
+      setTeachers(data);
+      setTeachersFetched(true);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setFetching(false);
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -96,33 +115,76 @@ function LoginScreen({ teachers, onLogin }) {
       </div>
 
       <div style={{ padding: '0 16px' }}>
-        <form onSubmit={handleSubmit}>
-          <div style={S.card}>
-            <h2 style={{ fontSize: 17, fontWeight: 700, color: navy, marginBottom: 20, marginTop: 0 }}>Who are you?</h2>
-            {error && <div style={S.error}>{error}</div>}
-            <div style={{ marginBottom: 16 }}>
-              <label style={S.label}>Select your name</label>
-              <select style={{ ...S.input, appearance: 'none' }} value={teacherId} onChange={e => setTeacherId(e.target.value)} required>
-                <option value="">Choose your name…</option>
-                {teachers.map(t => (
-                  <option key={t.id} value={t.id}>{t.firstName} {t.lastName}</option>
-                ))}
-              </select>
+
+        {/* Step 1 — School code */}
+        {!teachersFetched ? (
+          <form onSubmit={handleFetchTeachers}>
+            <div style={S.card}>
+              <h2 style={{ fontSize: 17, fontWeight: 700, color: navy, marginBottom: 6, marginTop: 0 }}>Enter School Code</h2>
+              <p style={{ fontSize: 13, color: '#64748b', marginBottom: 20 }}>
+                Your school code is provided by your admin. It's usually 4–6 characters (e.g. GHS01).
+              </p>
+              {error && <div style={S.error}>{error}</div>}
+              <div style={{ marginBottom: 20 }}>
+                <label style={S.label}>School Code</label>
+                <input
+                  style={{ ...S.input, textTransform: 'uppercase', letterSpacing: '0.15em', fontSize: 18, textAlign: 'center' }}
+                  type="text" placeholder="e.g. GHS01"
+                  value={schoolCode}
+                  onChange={e => setSchoolCode(e.target.value.toUpperCase())}
+                  required
+                />
+              </div>
+              <button type="submit" style={S.btnPrimary} disabled={fetching}>
+                {fetching ? 'Looking up…' : 'Continue →'}
+              </button>
             </div>
-            <div style={{ marginBottom: 20 }}>
-              <label style={S.label}>Your 4-digit PIN</label>
-              <input
-                style={{ ...S.input, fontSize: 24, letterSpacing: '0.3em', textAlign: 'center' }}
-                type="tel" inputMode="numeric" maxLength={4} pattern="\d{4}" placeholder="••••"
-                value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))} required
-              />
-              <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 6 }}>Set by your admin. Contact them if you don't have one.</p>
+          </form>
+        ) : (
+
+          /* Step 2 — Teacher + PIN */
+          <form onSubmit={handleSubmit}>
+            <div style={S.card}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+                <button
+                  type="button"
+                  onClick={() => { setTeachersFetched(false); setTeachers([]); setTeacherId(''); setPin(''); setError(''); }}
+                  style={{ background: '#f0f4fa', border: 'none', borderRadius: 8, padding: '4px 10px', fontSize: 12, color: navy, cursor: 'pointer' }}
+                >
+                  ← {schoolCode}
+                </button>
+                <h2 style={{ fontSize: 17, fontWeight: 700, color: navy, margin: 0 }}>Who are you?</h2>
+              </div>
+              {error && <div style={S.error}>{error}</div>}
+              <div style={{ marginBottom: 16 }}>
+                <label style={S.label}>Select your name</label>
+                <select
+                  style={{ ...S.input, appearance: 'none' }}
+                  value={teacherId}
+                  onChange={e => setTeacherId(e.target.value)}
+                  required
+                >
+                  <option value="">Choose your name…</option>
+                  {teachers.map(t => (
+                    <option key={t.id} value={t.id}>{t.firstName} {t.lastName}</option>
+                  ))}
+                </select>
+              </div>
+              <div style={{ marginBottom: 20 }}>
+                <label style={S.label}>Your 4-digit PIN</label>
+                <input
+                  style={{ ...S.input, fontSize: 24, letterSpacing: '0.3em', textAlign: 'center' }}
+                  type="tel" inputMode="numeric" maxLength={4} pattern="\d{4}" placeholder="••••"
+                  value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))} required
+                />
+                <p style={{ fontSize: 12, color: '#94a3b8', marginTop: 6 }}>Set by your admin. Contact them if you don't have one.</p>
+              </div>
+              <button type="submit" style={S.btnPrimary} disabled={loading}>
+                {loading ? 'Signing in…' : 'Sign In →'}
+              </button>
             </div>
-            <button type="submit" style={S.btnPrimary} disabled={loading}>
-              {loading ? 'Signing in…' : 'Sign In →'}
-            </button>
-          </div>
-        </form>
+          </form>
+        )}
 
         <p style={{ textAlign: 'center', fontSize: 11, color: '#94a3b8', padding: '4px 0 24px' }}>
           By using EduTrack you agree to our{' '}
@@ -247,7 +309,6 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
     img.src = url;
   }
 
-  // ── FIXED: email is now optional for both student and guardian ──
   function validateStep() {
     if (step === 0 && !student.photo) { setError('Photo is required. Please take a photo.'); return false; }
     if (step === 1) {
@@ -374,11 +435,11 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
             </div>
 
             {[
-              { label: 'First Name *',       field: 'firstName', type: 'text',  placeholder: 'e.g. Kwame' },
-              { label: 'Last Name *',        field: 'lastName',  type: 'text',  placeholder: 'e.g. Mensah' },
-              { label: 'Email (optional)',   field: 'email',     type: 'email', placeholder: 'student@example.com' },
-              { label: 'Phone',              field: 'phone',     type: 'tel',   placeholder: '+233 XX XXX XXXX' },
-              { label: 'Address',            field: 'address',   type: 'text',  placeholder: 'Residential address' },
+              { label: 'First Name *',     field: 'firstName', type: 'text',  placeholder: 'e.g. Kwame' },
+              { label: 'Last Name *',      field: 'lastName',  type: 'text',  placeholder: 'e.g. Mensah' },
+              { label: 'Email (optional)', field: 'email',     type: 'email', placeholder: 'student@example.com' },
+              { label: 'Phone',            field: 'phone',     type: 'tel',   placeholder: '+233 XX XXX XXXX' },
+              { label: 'Address',          field: 'address',   type: 'text',  placeholder: 'Residential address' },
             ].map(({ label, field, type, placeholder }) => (
               <div key={field} style={{ marginBottom: 14 }}>
                 <label style={S.label}>{label}</label>
@@ -449,10 +510,10 @@ function RegisterScreen({ teacher, selectedClass, currentTerm, onDone, onBack })
               For <strong style={{ color: navy }}>{student.firstName} {student.lastName}</strong>
             </p>
             {[
-              { label: 'First Name *',       field: 'firstName', type: 'text',  placeholder: 'Guardian first name' },
-              { label: 'Last Name *',        field: 'lastName',  type: 'text',  placeholder: 'Guardian last name' },
-              { label: 'Email (optional)',   field: 'email',     type: 'email', placeholder: 'guardian@example.com' },
-              { label: 'Phone',              field: 'phone',     type: 'tel',   placeholder: '+233 XX XXX XXXX' },
+              { label: 'First Name *',     field: 'firstName', type: 'text',  placeholder: 'Guardian first name' },
+              { label: 'Last Name *',      field: 'lastName',  type: 'text',  placeholder: 'Guardian last name' },
+              { label: 'Email (optional)', field: 'email',     type: 'email', placeholder: 'guardian@example.com' },
+              { label: 'Phone',            field: 'phone',     type: 'tel',   placeholder: '+233 XX XXX XXXX' },
             ].map(({ label, field, type, placeholder }) => (
               <div key={field} style={{ marginBottom: 14 }}>
                 <label style={S.label}>{label}</label>
@@ -547,7 +608,6 @@ function SuccessScreen({ lastStudent, count, selectedClass, onAddAnother, onSwit
 
 export default function App() {
   const [screen, setScreen]                   = useState('loading');
-  const [teachers, setTeachers]               = useState([]);
   const [teacher, setTeacher]                 = useState(null);
   const [classes, setClasses]                 = useState([]);
   const [currentTerm, setCurrentTerm]         = useState(null);
@@ -563,12 +623,13 @@ export default function App() {
         const saved = localStorage.getItem('ob_teacher');
         if (token && saved) {
           setTeacher(JSON.parse(saved));
-          const [cls, term] = await Promise.all([apiFetch('/onboarding/classes'), apiFetch('/onboarding/current-term')]);
+          const [cls, term] = await Promise.all([
+            apiFetch('/onboarding/classes'),
+            apiFetch('/onboarding/current-term'),
+          ]);
           setClasses(cls); setCurrentTerm(term);
           setScreen('class_select'); return;
         }
-        const t = await apiFetch('/onboarding/teachers');
-        setTeachers(t);
         setScreen('login');
       })
       .catch(() => setScreen('inactive'));
@@ -579,7 +640,10 @@ export default function App() {
     localStorage.setItem('ob_token', data.token);
     localStorage.setItem('ob_teacher', JSON.stringify(data.teacher));
     setTeacher(data.teacher);
-    const [cls, term] = await Promise.all([apiFetch('/onboarding/classes'), apiFetch('/onboarding/current-term')]);
+    const [cls, term] = await Promise.all([
+      apiFetch('/onboarding/classes'),
+      apiFetch('/onboarding/current-term'),
+    ]);
     setClasses(cls); setCurrentTerm(term);
     setScreen('class_select');
   }
@@ -601,7 +665,7 @@ export default function App() {
 
   if (screen === 'loading')      return <LoadingScreen />;
   if (screen === 'inactive')     return <InactiveScreen />;
-  if (screen === 'login')        return <LoginScreen teachers={teachers} onLogin={handleLogin} />;
+  if (screen === 'login')        return <LoginScreen onLogin={handleLogin} />;
   if (screen === 'class_select') return (
     <ClassSelectScreen
       teacher={teacher} classes={classes} currentTerm={currentTerm}
